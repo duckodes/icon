@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <title>GitHub 目錄檔案列表</title>
+</head>
+
+<body>
+    <h1>📁 assets 資料夾內容</h1>
+    <ul id="file-list">載入中...</ul>
+
+    <script>
+        const username = "duckodes";
+        const repo = "icon";
+        const folder = "";
+
+        const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${folder}`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById("file-list");
+                list.innerHTML = "";
+
+                data.forEach(file => {
+                    const li = document.createElement("li");
+                    const link = document.createElement("a");
+                    link.href = file.download_url;
+                    link.textContent = file.name;
+                    link.target = "_blank";
+                    li.appendChild(link);
+                    list.appendChild(li);
+                });
+            })
+            .catch(error => {
+                document.getElementById("file-list").innerHTML = "無法載入資料夾內容";
+                console.error("錯誤：", error);
+            });
+    </script>
+</body>
+
+</html>
