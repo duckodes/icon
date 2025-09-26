@@ -9,7 +9,13 @@ const app = (() => {
     function loadFolder(path) {
         const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${path}`;
         fetch(apiUrl)
-            .then(response => response.json())
+            .then(async response => {
+                if (!response.ok) {
+                    const json = await response.json();
+                    throw new Error(json.message);
+                }
+                return response.json();
+            })
             .then(data => {
                 listContainer.innerHTML = "";
                 currentPath = path;
@@ -31,14 +37,14 @@ const app = (() => {
                     if (item.type === "dir") {
                         div.onclick = () => loadFolder(item.path);
                     } else {
-                        div.onclick = () => window.open(item.download_url, "_blank");
+                        div.onclick = () => window.location.href = item.download_url;
                     }
 
                     listContainer.appendChild(div);
                 });
             })
             .catch(error => {
-                listContainer.innerHTML = "無法載入資料夾內容";
+                listContainer.textContent = "錯誤：" + error.message;
                 console.error("錯誤：", error);
             });
     }
